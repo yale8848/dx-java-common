@@ -43,7 +43,33 @@ public class WebConfInterceptor implements WebMvcConfigurer {
         return jsonObject;
 
     }
+    private static  JSONObject getJsonParams(HttpServletRequest arg0){
+        JSONObject jsonObject = new JSONObject();
+        try {
 
+            if (arg0 instanceof  BodyCachingHttpServletRequestWrapper){
+
+
+                BodyCachingHttpServletRequestWrapper bsr = (BodyCachingHttpServletRequestWrapper) arg0;
+
+                byte[] responseBody =  bsr.getBody();
+
+
+                String res = new String(responseBody,"UTF-8");
+
+
+                return JSONObject.parseObject(res);
+
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return jsonObject;
+
+    }
     public static void postInterHandle(HttpServletRequest arg0, HttpServletResponse arg1){
         String method =arg0.getMethod().toLowerCase();
 
@@ -74,7 +100,13 @@ public class WebConfInterceptor implements WebMvcConfigurer {
         JSONObject jsonObject = new JSONObject();
 
         jsonObject.put("header", Http.getHeader(arg0));
-        jsonObject.put("params", Http.getParam(arg0));
+        if(reqCt.contains("application/json")){
+
+            jsonObject.put("params", getJsonParams(arg0));
+
+        }else{
+            jsonObject.put("params", Http.getParam(arg0));
+        }
         jsonObject.put("res", getRes(arg1));
 
         jsonObject.put("event", arg0.getRequestURI());
