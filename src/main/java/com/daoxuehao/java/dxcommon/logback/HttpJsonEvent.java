@@ -143,6 +143,7 @@ public enum HttpJsonEvent {
 
     public void addDataEvent(JSONObject jsonObject){
 
+        jsonObject.put("timestamp",TimeUtil.formatTimestamp(System.currentTimeMillis(),TimeUtil.timestampFormat,null));
         addData(jsonObject,queue);
     }
 

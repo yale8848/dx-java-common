@@ -1,7 +1,6 @@
 package com.daoxuehao.java.dxcommon.logback;
 
 import com.alibaba.fastjson.JSONObject;
-import com.dxjy.dxdesklamp.common.UserEncryptCode;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;

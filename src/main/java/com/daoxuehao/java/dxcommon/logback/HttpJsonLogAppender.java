@@ -70,27 +70,14 @@ public class HttpJsonLogAppender extends UnsynchronizedAppenderBase<LoggingEvent
 
 
     }
-    protected DateFormat createDateFormat(String var1) {
-        return new SimpleDateFormat(var1);
-    }
+
 
     protected String formatTimestamp(long var1) {
-        if (this.timestampFormat != null && var1 >= 0L) {
-            Date var3 = new Date(var1);
-            DateFormat var4 = this.createDateFormat(this.timestampFormat);
-            if (this.timestampFormatTimezoneId != null) {
-                TimeZone var5 = TimeZone.getTimeZone(this.timestampFormatTimezoneId);
-                var4.setTimeZone(var5);
-            }
 
-            return this.format(var3, var4);
-        } else {
-            return String.valueOf(var1);
-        }
+
+        return TimeUtil.formatTimestamp(var1,timestampFormat,timestampFormatTimezoneId);
     }
-    protected String format(Date var1, DateFormat var2) {
-        return var2.format(var1);
-    }
+
 
     @Override
     public void start() {
