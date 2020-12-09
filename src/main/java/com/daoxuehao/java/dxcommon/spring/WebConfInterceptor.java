@@ -116,15 +116,18 @@ public class WebConfInterceptor implements WebMvcConfigurer {
 
 
         if (httpEventParamsCallBack !=null){
-
-            jsonObject.put("userId", httpEventParamsCallBack.getUserId(arg0));
-
             SortedMap<String,String> map = httpEventParamsCallBack.getAdditionParams(arg0);
-
-            for (SortedMap.Entry<String,String> entry :map.entrySet()) {
-                jsonObject.put(entry.getKey(),entry.getValue());
+            if (map!=null){
+                for (SortedMap.Entry<String,String> entry :map.entrySet()) {
+                    jsonObject.put(entry.getKey(),entry.getValue());
+                }
             }
-            jsonObject.put("userId", httpEventParamsCallBack.getUserId(arg0));
+
+            String uid = httpEventParamsCallBack.getUserId(arg0);
+            if (uid!=null){
+                jsonObject.put("userId", uid);
+            }
+
         }
 
         HttpJsonEvent.Self.addDataEvent(jsonObject);

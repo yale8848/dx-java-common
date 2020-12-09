@@ -63,6 +63,24 @@ public enum HttpJsonEvent {
         return httpEventParamsCallBack;
     }
 
+    private void httpPost(ConcurrentLinkedQueue queue,String path){
+        JSONArray jsonArray = new JSONArray();
+        for(int i = 0;i<batchNum;i++){
+            String tmp = (String) queue.poll();
+            if (tmp==null){
+                break;
+            }
+            jsonArray.add(JSON.parseObject(tmp));
+        }
+        if (jsonArray.size()>0&&url!=null){
+
+            JSONObject  jsonObject = new JSONObject();
+
+            jsonObject.put("data",jsonArray);
+
+            com.daoxuehao.java.dxcommon.logback.Http.postJson(url+path,jsonObject.toJSONString());
+        }
+    }
 
     public void start(){
         timer.schedule(new TimerTask() {
@@ -74,18 +92,7 @@ public enum HttpJsonEvent {
                     @Override
                     public void run() {
 
-                        JSONArray jsonArray = new JSONArray();
-                        for(int i = 0;i<batchNum;i++){
-                            String tmp = (String) queue.poll();
-                            if (tmp==null){
-                                break;
-                            }
-                            jsonArray.add(JSON.parseObject(tmp));
-                        }
-                        if (jsonArray.size()>0&&url!=null){
-
-                            com.daoxuehao.java.dxcommon.logback.Http.postJson(url+"/hub/event",jsonArray.toJSONString());
-                        }
+                        httpPost(queue,"/hub/event");
                     }
                 });
 
@@ -102,18 +109,7 @@ public enum HttpJsonEvent {
                     @Override
                     public void run() {
 
-                        JSONArray jsonArray = new JSONArray();
-                        for(int i = 0;i<batchNum;i++){
-                            String tmp = (String) queueLog.poll();
-                            if (tmp==null){
-                                break;
-                            }
-                            jsonArray.add(JSON.parseObject(tmp));
-                        }
-                        if (jsonArray.size()>0&&url!=null){
-
-                            com.daoxuehao.java.dxcommon.logback.Http.postJson(url+"/hub/log",jsonArray.toJSONString());
-                        }
+                        httpPost(queueLog,"/hub/log");
                     }
                 });
 
