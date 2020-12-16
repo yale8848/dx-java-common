@@ -99,7 +99,8 @@ public class WebConfInterceptor implements WebMvcConfigurer {
 
         JSONObject jsonObject = new JSONObject();
 
-        jsonObject.put("header", Http.getHeader(arg0));
+        JSONObject header = Http.getHeader(arg0);
+        jsonObject.put("header", header);
         if(reqCt.contains("application/json")){
 
             jsonObject.put("params", getJsonParams(arg0));
@@ -110,7 +111,7 @@ public class WebConfInterceptor implements WebMvcConfigurer {
         jsonObject.put("res", getRes(arg1));
 
         jsonObject.put("event", arg0.getRequestURI());
-        jsonObject.put("remoteIp", IPUtils.getIp(arg0));
+        jsonObject.put("remoteIp", IPUtils.getIp(header,arg0));
 
         HttpEventParamsCallBack httpEventParamsCallBack = HttpJsonEvent.Self.getHttpEventParamsCallBack();
 

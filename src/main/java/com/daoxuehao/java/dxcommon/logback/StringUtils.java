@@ -8,6 +8,10 @@ public class StringUtils {
 
 
     public static boolean isNotEmpty(String str){
-        return str!=null&&str.equals("");
+        return str!=null&&!str.equals("");
+    }
+
+    public static boolean isEmpty(String str){
+        return !isNotEmpty(str);
     }
 }

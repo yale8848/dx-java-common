@@ -1,6 +1,8 @@
 package com.daoxuehao.java.dxcommon.logback;
 
 
+import com.alibaba.fastjson.JSONObject;
+
 import javax.servlet.http.HttpServletRequest;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -9,7 +11,31 @@ import java.util.Enumeration;
 
 public class IPUtils {
 
+    private static String [] flag = new String[]{"X-Forwarded-For","X-Real-IP"};
 
+    public static String getIp(JSONObject header,HttpServletRequest request) {
+
+
+        String ip = null;
+        for (String flg:flag) {
+            ip =  header.getString(flg);
+            if (StringUtils.isEmpty(ip)){
+                ip =  header.getString(flg.toLowerCase());
+            }
+            if (StringUtils.isNotEmpty(ip)){
+                break;
+            }
+        }
+        if (StringUtils.isEmpty(ip)||"unKnown".equalsIgnoreCase(ip)){
+            return request.getRemoteAddr();
+        }
+        int index = ip.indexOf(",");
+        if (index != -1) {
+            return ip.substring(0, index);
+        }
+        return ip;
+
+    }
 
     public static String getIp(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
@@ -43,6 +69,12 @@ public class IPUtils {
             Enumeration<NetworkInterface> allNetInterfaces = NetworkInterface.getNetworkInterfaces();
             while (allNetInterfaces.hasMoreElements()){
                 NetworkInterface netInterface = (NetworkInterface) allNetInterfaces.nextElement();
+
+                String interName = netInterface.getDisplayName();
+
+                if (interName.contains("docker")){
+                    continue;
+                }
                 Enumeration<InetAddress> addresses = netInterface.getInetAddresses();
                 while (addresses.hasMoreElements()){
                     InetAddress ip = (InetAddress) addresses.nextElement();
@@ -57,7 +89,6 @@ public class IPUtils {
                             return ad;
                         }
 
-                        return "";
                     }
                 }
             }
