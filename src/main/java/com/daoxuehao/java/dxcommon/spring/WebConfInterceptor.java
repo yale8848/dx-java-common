@@ -1,5 +1,7 @@
 package com.daoxuehao.java.dxcommon.spring;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.daoxuehao.java.dxcommon.logback.*;
 import org.springframework.context.annotation.Configuration;
@@ -30,8 +32,22 @@ public class WebConfInterceptor implements WebMvcConfigurer {
 
                 String res = new String(responseBody,"UTF-8");
 
+                if (StringUtils.isEmpty(res)){
+                    return jsonObject;
+                }
 
-                return JSONObject.parseObject(res);
+                Object jo =   JSON.parse(res);
+                if (jo instanceof  JSONObject){
+                    return (JSONObject) jo;
+                }
+
+                if (jo instanceof JSONArray){
+
+                    jsonObject.put("data",jo);
+                }
+
+
+                return jsonObject;
 
 
             }
