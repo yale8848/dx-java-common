@@ -5,6 +5,7 @@ import com.daoxuehao.java.dxcommon.logback.BodyCachingHttpServletResponseWrapper
 import com.daoxuehao.java.dxcommon.logback.HttpJsonEvent;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -49,13 +50,28 @@ public class WebLogFilter implements Filter,Ordered {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        BodyCachingHttpServletRequestWrapper requestWrapper =
-                new BodyCachingHttpServletRequestWrapper((HttpServletRequest) servletRequest);
 
-        BodyCachingHttpServletResponseWrapper responseWrapper =
-                new BodyCachingHttpServletResponseWrapper((HttpServletResponse) servletResponse);
 
-        filterChain.doFilter(requestWrapper , responseWrapper);
+        if (servletRequest instanceof  HttpServletRequest){
+
+            BodyCachingHttpServletResponseWrapper responseWrapper =
+                    new BodyCachingHttpServletResponseWrapper((HttpServletResponse) servletResponse);
+
+            HttpServletRequest hs = (HttpServletRequest) servletRequest;
+
+            String reqCt = hs.getHeader("Content-Type");
+
+            if (reqCt!=null&&reqCt.contains("application/json")){
+                BodyCachingHttpServletRequestWrapper requestWrapper =
+                        new BodyCachingHttpServletRequestWrapper((HttpServletRequest) servletRequest);
+                filterChain.doFilter(requestWrapper , responseWrapper);
+            }else{
+                filterChain.doFilter(servletRequest , responseWrapper);
+            }
+
+        }else{
+            filterChain.doFilter(servletRequest , servletResponse);
+        }
 
 
 

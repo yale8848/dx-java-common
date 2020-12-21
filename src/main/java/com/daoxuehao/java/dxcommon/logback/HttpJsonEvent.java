@@ -9,6 +9,7 @@ import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Yale
@@ -44,6 +45,10 @@ public enum HttpJsonEvent {
     private static ConcurrentLinkedQueue queueLog = new ConcurrentLinkedQueue();
     private  ExecutorService threadPoolLog = Executors.newSingleThreadExecutor();
     private Timer timerLog=new Timer();
+
+
+    private AtomicBoolean isQueueFinish =new AtomicBoolean(true);
+    private AtomicBoolean isQueueLogFinish =new AtomicBoolean(true);
 
     private com.daoxuehao.java.dxcommon.logback.HttpEventParamsCallBack httpEventParamsCallBack;
 
@@ -87,12 +92,17 @@ public enum HttpJsonEvent {
             @Override
             public void run() {
 
+                if (!isQueueFinish.get()){
+                    return;
+                }
 
                 threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
-
-                        httpPost(queue,"/hub/event");
+                        if (isQueueFinish.compareAndSet(true,false)){
+                            httpPost(queue,"/hub/event");
+                            isQueueFinish.set(true);
+                        }
                     }
                 });
 
@@ -103,13 +113,18 @@ public enum HttpJsonEvent {
         timerLog.schedule(new TimerTask() {
             @Override
             public void run() {
-
+                if (!isQueueLogFinish.get()){
+                    return;
+                }
 
                 threadPoolLog.execute(new Runnable() {
                     @Override
                     public void run() {
+                        if (isQueueLogFinish.compareAndSet(true,false)){
+                            httpPost(queueLog,"/hub/log");
+                            isQueueLogFinish.set(true);
+                        }
 
-                        httpPost(queueLog,"/hub/log");
                     }
                 });
 

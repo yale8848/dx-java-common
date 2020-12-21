@@ -8,6 +8,8 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Yale
@@ -19,8 +21,14 @@ public class BodyCachingHttpServletRequestWrapper extends HttpServletRequestWrap
     private byte[] body;
     private ServletInputStreamWrapper inputStreamWrapper;
 
+    private HashMap<String,String[]> paramsMap = new HashMap<>();
+
     public BodyCachingHttpServletRequestWrapper(HttpServletRequest request) throws IOException {
         super(request);
+
+
+        this.copyParams();
+
         this.body = IOUtils.toBytes(request.getInputStream());
         ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(this.body);
         this.inputStreamWrapper = new ServletInputStreamWrapper(byteArrayInputStream);
@@ -35,6 +43,16 @@ public class BodyCachingHttpServletRequestWrapper extends HttpServletRequestWrap
         return body;
     }
 
+    public void copyParams(){
+        if (super.getParameterMap() == null){
+            return;
+        }
+        Map<String,String[]> map =super.getParameterMap();
+        for (String key : map.keySet()) {
+            paramsMap.put(key, map.get(key));
+        }
+    }
+
     @Override
     public ServletInputStream getInputStream() throws IOException {
         return this.inputStreamWrapper;
@@ -45,6 +63,10 @@ public class BodyCachingHttpServletRequestWrapper extends HttpServletRequestWrap
         return new BufferedReader(new InputStreamReader(this.inputStreamWrapper));
     }
 
+    @Override
+    public Map<String, String[]> getParameterMap() {
+        return paramsMap;
+    }
 
     @Data
     @AllArgsConstructor

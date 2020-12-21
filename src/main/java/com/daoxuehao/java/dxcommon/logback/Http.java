@@ -69,21 +69,13 @@ public class Http {
     public static JSONObject getParam(HttpServletRequest request) {
         JSONObject param = new JSONObject();
         try {
+
             Map<String, String[]> params = request.getParameterMap();
             for (String key : params.keySet()) {
                 String[] values = params.get(key);
                 for (int i = 0; i < values.length; i++) {
                     String value = values[i];
                     param.put(key, value);
-                }
-            }
-
-            Enumeration<String> en = request.getHeaderNames();
-            JSONObject header = new JSONObject();
-            if (en!=null){
-                while (en.hasMoreElements()){
-                    String n = en.nextElement();
-                    header.put(n,request.getHeader(n));
                 }
             }
 
