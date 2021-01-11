@@ -3,6 +3,7 @@ package com.daoxuehao.java.dxcommon.spring;
 import com.daoxuehao.java.dxcommon.logback.BodyCachingHttpServletRequestWrapper;
 import com.daoxuehao.java.dxcommon.logback.BodyCachingHttpServletResponseWrapper;
 import com.daoxuehao.java.dxcommon.logback.HttpJsonEvent;
+import com.daoxuehao.java.dxcommon.logback.TimeRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -45,6 +46,7 @@ public class WebLogFilter implements Filter,Ordered {
         HttpJsonEvent.Self.setPeriod(period);
         HttpJsonEvent.Self.setBathNum(batchNum);
         HttpJsonEvent.Self.setProfile(profile);
+
 
     }
 

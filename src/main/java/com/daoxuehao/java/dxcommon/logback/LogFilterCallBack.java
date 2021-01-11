@@ -10,6 +10,6 @@ import java.util.HashMap;
  */
 public interface LogFilterCallBack {
 
-    String logWindowFilter( HashMap<String,Long> timeWindow ,JSONObject ret);
+    String logWindowFilter( HashMap<String,TimeRecord> timeWindow ,JSONObject ret);
     boolean ignore(JSONObject ret);
 }

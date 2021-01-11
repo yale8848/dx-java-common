@@ -55,8 +55,7 @@ public enum HttpJsonEvent {
 
     private LogFilterCallBack logFilterCallBack;
 
-    private HashMap<String,Long> timeWindow = new HashMap<>();
-    private HashMap<String,Long> timeWindowComp = new HashMap<>();
+    private HashMap<String,TimeRecord> timeWindow = new HashMap<>();
 
     static {
 
@@ -170,18 +169,17 @@ public enum HttpJsonEvent {
 
             if (key!=null&&key.length()>0&&timeWindow.containsKey(key)){
 
-                Long t = timeWindow.get(key);
-                if (t!=null && t >0){
+                TimeRecord t = timeWindow.get(key);
+                if (t!=null&&t.getTimeWindow()>0){
 
                     Long n  = System.currentTimeMillis();
-                    Long l = n;
-                    if (!timeWindowComp.containsKey(key)){
-                        timeWindowComp.put(key,n);
-                    }else{
-                        l = timeWindowComp.get(key);
+                    Long l = t.getLastTime();
+                    if (l == 0){
+                        t.setLastTime(n);
+                        return false;
                     }
-                    if (n-l<= t) return true;
-                    timeWindowComp.put(key,n);
+                    if (n-l<= t.getTimeWindow()) return true;
+                    t.setLastTime(n);
                 }
             }
         }
