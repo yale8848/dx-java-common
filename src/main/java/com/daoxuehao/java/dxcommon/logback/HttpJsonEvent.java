@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -52,11 +53,21 @@ public enum HttpJsonEvent {
 
     private com.daoxuehao.java.dxcommon.logback.HttpEventParamsCallBack httpEventParamsCallBack;
 
+    private LogFilterCallBack logFilterCallBack;
+
+    private HashMap<String,Long> timeWindow = new HashMap<>();
+    private HashMap<String,Long> timeWindowComp = new HashMap<>();
+
     static {
 
         HttpJsonEvent.Self.start();
     }
 
+
+    public HttpJsonEvent setLogFilterCallBack(LogFilterCallBack logFilterCallBack){
+        this.logFilterCallBack = logFilterCallBack;
+        return this;
+    }
 
     public HttpJsonEvent setHttpEventParamsCallBack(com.daoxuehao.java.dxcommon.logback.HttpEventParamsCallBack callBack){
         httpEventParamsCallBack = callBack;
@@ -151,14 +162,45 @@ public enum HttpJsonEvent {
         timerLog.cancel();
     }
 
+    private boolean ignore(JSONObject jsonObject){
+        if (logFilterCallBack!=null&&logFilterCallBack.ignore(jsonObject))  return true;
+
+        if (logFilterCallBack!=null){
+            String  key = logFilterCallBack.logWindowFilter(timeWindow,jsonObject);
+
+            if (key!=null&&key.length()>0&&timeWindow.containsKey(key)){
+
+                Long t = timeWindow.get(key);
+                if (t!=null && t >0){
+
+                    Long n  = System.currentTimeMillis();
+                    Long l = n;
+                    if (!timeWindowComp.containsKey(key)){
+                        timeWindowComp.put(key,n);
+                    }else{
+                        l = timeWindowComp.get(key);
+                    }
+                    if (n-l<= t) return true;
+                    timeWindowComp.put(key,n);
+                }
+            }
+        }
+        return false;
+    }
 
     public void addDataEvent(JSONObject jsonObject){
+
+
+        if (ignore(jsonObject)) return;
+
 
         jsonObject.put("timestamp",TimeUtil.formatTimestamp(System.currentTimeMillis(),TimeUtil.timestampFormat,null));
         addData(jsonObject,queue);
     }
 
     public void addDataLog(JSONObject jsonObject){
+
+        if (ignore(jsonObject)) return;
         addData(jsonObject,queueLog);
 
     }
