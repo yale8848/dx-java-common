@@ -106,7 +106,7 @@ public class HttpJsonLogAppender extends UnsynchronizedAppenderBase<LoggingEvent
         var2.put("level",e.getLevel().levelStr);
         var2.put("timestamp",formatTimestamp(e.getTimeStamp()));
         var2.put("logger",e.getLoggerName());
-        var2.put("message",e.getMessage());
+        var2.put("message",e.getFormattedMessage());
         //var2.put("raw-message",e.getFormattedMessage());
         //var2.put("context",e.getLoggerContextVO().getName());
         var2.put("thread",e.getThreadName());
