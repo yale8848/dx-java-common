@@ -24,6 +24,9 @@ public class CommonSignerTest extends TestCase {
       ICommonSigner commonSigner =   CommonSigner.create("a","b");
 
       try {
+          commonSigner.getSignUrl("http://www.baidu.com?test=%E4%BD%A0%E5%A5%BD");
+          commonSigner.getSignUrl("http://www.baidu.com?test=你好");
+          commonSigner.getSignUrl("https://www.baidu.com:8889/get?a=b&cc=bb");
           commonSigner.getSignUrl("http://www.baidu.com");
           commonSigner.getSignUrl("http://www.baidu.com/get");
           commonSigner.getSignUrl("https://www.baidu.com/get?");
@@ -31,7 +34,8 @@ public class CommonSignerTest extends TestCase {
           commonSigner.getSignUrl("https://www.baidu.com/get?a=");
           commonSigner.getSignUrl("https://www.baidu.com/get?a=b");
           commonSigner.getSignUrl("https://www.baidu.com/get?a=b&cc=bb");
-          commonSigner.getSignUrl("https://www.baidu.com:8889/get?a=b&cc=bb");
+
+
       }catch (Exception e){
 
       }
