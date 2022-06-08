@@ -41,4 +41,20 @@ public class CommonSignerTest extends TestCase {
       }
 
     }
+
+    public void testCheckUrl(){
+        ICommonSigner commonSigner =   CommonSigner.create("a","b");
+        try {
+           String nu= commonSigner.getSignUrl("http://www.baidu.com?test=%E4%BD%A0%E5%A5%BD");
+            System.out.println(nu);
+
+            System.out.println(commonSigner.checkSign(nu));
+
+
+
+        }catch (Exception e){
+
+        }
+
+    }
 }

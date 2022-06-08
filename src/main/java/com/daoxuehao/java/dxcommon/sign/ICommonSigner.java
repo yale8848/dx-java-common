@@ -23,6 +23,9 @@ public interface ICommonSigner {
     //check sign params in map
     boolean checkSign(Map<String,String> params);
 
+    //check sign with url
+    boolean checkSign(String url);
+
 
     //check sign params in JSON
     boolean checkSign(JSONObject params);
@@ -32,5 +35,8 @@ public interface ICommonSigner {
 
     //get sign in map
     String getSign(Map<String,String> params);
+
+
+
 
 }

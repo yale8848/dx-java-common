@@ -67,12 +67,6 @@ public class CommonSigner implements ICommonSigner {
                 }
             }
         }
-        params.remove(SignKeyName);
-        params.remove(AppIdKeyName);
-        params.remove(TimeStampKeyName);
-
-        params.put(AppIdKeyName,mAppId);
-        params.put(TimeStampKeyName,System.currentTimeMillis()+"");
 
         return params;
     }
@@ -80,6 +74,13 @@ public class CommonSigner implements ICommonSigner {
     public String getSign(String url) throws Exception {
 
         TreeMap params = getParamsMap(url);
+
+        if (params.containsKey(SignKeyName)){
+            throw new Exception("find "+SignKeyName);
+        }
+        if (!params.containsKey(AppIdKeyName)||!params.containsKey(TimeStampKeyName)){
+            throw new Exception("not find "+AppIdKeyName+" or "+TimeStampKeyName);
+        }
 
         return getSign(params);
     }
@@ -120,6 +121,18 @@ public class CommonSigner implements ICommonSigner {
     }
 
     @Override
+    public boolean checkSign(String url) {
+
+        try {
+           Map<String,String> params = getParamsMap(url);
+           return checkSign(params);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    @Override
     public boolean checkSign(JSONObject jsonObject) {
 
         if (!jsonObject.containsKey(SignKeyName)||!jsonObject.containsKey(AppIdKeyName)||!jsonObject.containsKey(TimeStampKeyName)){
@@ -141,6 +154,14 @@ public class CommonSigner implements ICommonSigner {
     public String getSignUrl(String url) throws Exception {
 
         TreeMap<String,String> params = getParamsMap(url);
+
+
+        params.remove(SignKeyName);
+        params.remove(AppIdKeyName);
+        params.remove(TimeStampKeyName);
+
+        params.put(AppIdKeyName,mAppId);
+        params.put(TimeStampKeyName,System.currentTimeMillis()+"");
 
         String sign = getSign(params);
 
